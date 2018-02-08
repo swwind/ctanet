@@ -1,0 +1,32 @@
+{
+  "name": "game",
+  "version": "0.0.1",
+  "description": "nothing",
+  "Keywords": [
+    "Minecraft",
+    "MinecraftServerManager",
+    "MinecraftServerPanel"
+  ],
+  "main": "app.js",
+  "author": "Suwings",
+  "readmeFilename": "README.md",
+  "license": "AGPL",
+  "contributors": [
+    "Suwings",
+    "pppploi8",
+    "paji"
+  ],
+  "dependencies": {
+    "colors": "^1.1.2",
+    "http-server": "^0.11.1",
+    "websocketserver": "^1.0.0"
+  },
+  "devDependencies": {},
+  "repository": {},
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=8.0"
+  }
+}
