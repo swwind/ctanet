@@ -10,7 +10,8 @@
   "readmeFilename": "README.md",
   "license": "AGPL",
   "contributors": [
-    "swwind"
+    "swwind",
+    "nn020701"
   ],
   "dependencies": {
     "colors": "^1.1.2",
