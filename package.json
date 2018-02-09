@@ -1,20 +1,16 @@
 {
-  "name": "game",
+  "name": "ctanet",
   "version": "0.0.1",
-  "description": "nothing",
+  "description": "A little game like cursors.io",
   "Keywords": [
-    "Minecraft",
-    "MinecraftServerManager",
-    "MinecraftServerPanel"
+    "cursors.io"
   ],
   "main": "app.js",
-  "author": "Suwings",
+  "author": "swwind",
   "readmeFilename": "README.md",
   "license": "AGPL",
   "contributors": [
-    "Suwings",
-    "pppploi8",
-    "paji"
+    "swwind"
   ],
   "dependencies": {
     "colors": "^1.1.2",
