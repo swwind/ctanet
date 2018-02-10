@@ -215,6 +215,8 @@ var start_game = function (H = 700, W = 1000) {
         subtitle: 'You submitted suicided.',
         button: ['复活'],
         callback: function () {
+          if (connect_lost)
+            return
           px = rspx, py = rspy
           ws.send(px + ',' + py)
           canvas.requestPointerLock()

@@ -1,33 +1,43 @@
 const HttpServer = require('http-server')
-var WebSocketServer = require("websocketserver")
-var localhost = "127.0.0.1"
+const WebSocket = require('ws')
+const colors = require('colors')
+const localhost = "127.0.0.1"
+const http_port = 80
+const websocket_port = 18465
 
-var server = new WebSocketServer("none", 18465)
+const wss = new WebSocket.Server({port: websocket_port});
 var connection_list = {}
-server.on("connection", function(id) {
-  connection_list[id] = {px: -100, py: -100}
-  console.log('Id ' + id + ' joined the game')
-  var s = Object.assign(connection_list, {self: id});
-  server.sendMessage('one', 'upd|' + JSON.stringify(s), id)
-  server.sendMessage('all', 'pjn|' + id)
-})
-server.on("message", function(data, id) {
-  var mes = server.unmaskMessage(data)
-  var str = server.convertToString(mes.message)
-  var [px, py] = str.split(',').map(x => parseInt(x))
-  connection_list[id].px = px
-  connection_list[id].py = py
-  server.sendMessage('all', 'pch|' + id + ',' + px + ',' + py)
-})
-server.on("closedconnection", function(id) {
-  console.log("Connection " + id + " has left the server")
-  delete connection_list[id];
-  server.sendMessage('all', 'pft|' + id)
-})
-console.log('websocket server started at ' + localhost + ':' + 18465)
+var id = 0
+wss.broadcast = function (data) {
+  wss.clients.forEach(function (client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(data)
+    }
+  })
+}
+wss.on('connection', function (ws) {
+  ws.id = ++ id
+  connection_list[ws.id] = {px: -100, py: -100}
+  ws.send('upd|' + JSON.stringify(Object.assign({self: ws.id}, connection_list)))
+  wss.broadcast(`pjn|${id}`)
+  console.log(`Connection ${id} joined the game.`.green)
+  ws.on('message', function (data) {
+    var [px, py] = data.split(',').map(x => parseInt(x))
+    connection_list[ws.id].px = px
+    connection_list[ws.id].py = py
+    wss.broadcast(`pch|${ws.id},${px},${py}`)
+  });
+  ws.on('error', function () {})
+  ws.on('close', function () {
+    console.log(`Connection ${id} left the game.`.red)
+    delete connection_list[ws.id]
+    wss.broadcast(`pft|${ws.id}`)
+  })
+});
 
-const port = 80
+console.log('websocket server started at [ws://%s:%d]', localhost, websocket_port)
+
 var hs = HttpServer.createServer()
-hs.listen(port)
-console.log('http server started at ' + localhost + ':' + port)
+hs.listen(http_port)
+console.log('http server started at [http://%s:%d]', localhost, http_port)
 
