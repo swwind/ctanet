@@ -132,7 +132,14 @@ var start_game = function (H = 700, W = 1000) {
     }
   })
 
-  var ws = new WebSocket('ws://10.176.20.73:18465')
+  var GET = {}
+  window.location.href.replace(/^[^\?]*\?/gi, '').split('&').map(x => {
+    const [key, value] = x.split('=')
+    GET[key] = value
+  })
+  var ip = GET["ip"] || window.location.hostname
+  console.log(ip)
+  var ws = new WebSocket(`ws://${ip}:18465`)
   ws.onopen = function (e) {
     title = 'Click To Start'
   };
