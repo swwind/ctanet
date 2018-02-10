@@ -118,3 +118,79 @@ canvas {
   border: 2px solid #222;
   display: block;
 }
+.input-dlg {
+  width: 500px;
+  height: 300px;
+  position: fixed;
+  display: block;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 50px 20px;
+  background-color: white;
+  box-shadow: 0 0 5px #666;
+  box-sizing: border-box;
+}
+.input-dlg .input-title {
+  font-family: sao;
+  font-size: 2em;
+  color: #666;
+}
+.input-dlg .input-input {
+  border: none;
+  border-left: 5px solid #ccc;
+  line-height: 20px;
+  font-family: sao;
+  color: #666;
+  padding: 5px 10px;
+  margin: 20px 0;
+  font-size: 1.5em;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-dlg .input-button {
+  font-family: sao;
+  color: white;
+  width: 100%;
+  border-radius: 10px;
+  height: 50px;
+  line-height: 20px;
+  font-size: 2em;
+  border: none;
+  background-color: rgba(0, 156, 0, 0.8);
+  transition: background-color .3s;
+}
+.input-dlg .input-copy {
+  font-size: 1em;
+  font-family: sao;
+  text-align: center;
+  color: #666;
+  margin: 20px 0;
+}
+.input-dlg .input-copy a {
+  color: #00BCD4;
+}
+.input-dlg .input-button:hover {
+  cursor: pointer;
+  background-color: rgba(0, 173, 0, 0.8);
+  transition: background-color .3s;
+}
+.input-dlg .input-input::-webkit-input-placeholder {
+  color: #aaa;
+}
+.input-dlg .input-input:-moz-placeholder {
+  color: #aaa;
+}
+.input-dlg .input-input::-moz-placeholder {
+  color: #aaa;
+}
+.input-dlg .input-input:-ms-input-placeholder {
+  color: #aaa;
+}
+*:focus {
+  outline: none;
+  border: none;
+}

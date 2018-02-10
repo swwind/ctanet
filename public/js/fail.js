@@ -55,3 +55,22 @@ var fail = function (arg) {
     $('body').append(s);
   }, 5000)
 }
+var askname = function (tit) {
+  var div = $('<div/>').addClass('input-dlg')
+  var tiv = $('<div/>').addClass('input-title').html('Please enter your name:')
+  var iiv = $('<input/>').addClass('input-input').attr('type', 'text').attr('placeholder', 'unnamed')
+  var cbt = $('<button/>').addClass('input-button').html('OK')
+  var cpy = $('<div/>').addClass('input-copy').html('Powered By <a href="https://github.com/swwind/ctanet/" target="_view">Ctanet</a>')
+  cbt.click(function () {
+    div.fadeOut(500)
+    var name = iiv.val()
+    document.cookie = `name=${name}`
+    setTimeout(function () {
+      div.remove()
+    }, 500)
+    start_game(name)
+  })
+  div.append(tiv).append(iiv).append(cbt).append(cpy)
+  $("body").append(div);
+  iiv.focus()
+}

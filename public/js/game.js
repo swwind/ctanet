@@ -23,11 +23,13 @@
   }
 })();
 
-var start_game = function (H = 700, W = 1000) {
+var start_game = function (name, H = 700, W = 1000) {
   var canvas = document.getElementById('canvas')
   var ctx = canvas.getContext('2d')
   canvas.height = H
   canvas.width = W
+  name = name || 'unnamed'
+
   var clear = function () {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
   }
@@ -65,31 +67,31 @@ var start_game = function (H = 700, W = 1000) {
   var rspx = 200, rspy = 500
   var connect_lost = false
 
-  var draw_cursor = function (px, py, name, color = .5) {
+  var draw_cursor = function (px, py, name, color = .9) {
     name = name || 'unnamed'
     ctx.fillStyle = `rgba(108, 18, 202, ${color})`
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(px, py)
     ctx.lineTo(px, py + 15)
-    ctx.lineTo(px + 5, py + 10)
+    ctx.lineTo(px + 4, py + 10)
     ctx.lineTo(px + 11, py + 10)
     ctx.lineTo(px, py)
     ctx.fill()
     ctx.closePath()
     ctx.lineWidth = 3
     ctx.strokeStyle = `rgba(0, 0, 0, ${color})`
-    ctx.font = "16px sao"
+    ctx.font = '16px sao'
     ctx.textAlign = 'center'
     ctx.strokeText(name, px + 2, py - 10)
     ctx.fillStyle = `rgba(255, 255, 255, ${color})`
-    ctx.font = "16px sao"
+    ctx.font = '16px sao'
     ctx.textAlign = 'center'
     ctx.fillText(name, px + 2, py - 10)
 
   }
   var lava = [[20, 20, 100, 100], [125, 20, 10, 100], [400, 250, 100, 120], [510, 250, 100, 120], [400, 100, 20, 150], [590, 100, 20, 150], [420, 100, 170, 20]]
-  var wall = [[50, 50, 10, 500], [70, 50, 10, 500], [150, 450, 100, 100], [260, 450, 100, 100], [150, 560, 210, 20]]
+  var wall = [[50, 50, 10, 500], [70, 50, 10, 500], [260, 450, 100, 110], [150, 550, 210, 20]]
   var draw_lava = function () {
     for (var i = 0; i < lava.length; i++) {
       ctx.fillStyle = 'rgba(241, 63, 63, .5)'
@@ -98,11 +100,10 @@ var start_game = function (H = 700, W = 1000) {
   }
   var draw_wall = function () {
     for (var i = 0; i < wall.length; i++) {
-      ctx.fillStyle = 'rgba(0, 0, 0, .5)'
-      ctx.fillRect(wall[i][0] - 1, wall[i][1] - 1, wall[i][2] + 2, wall[i][3] + 2)
+      ctx.fillStyle = 'rgb(127, 127, 127)'
+      ctx.fillRect(wall[i][0], wall[i][1], wall[i][2], wall[i][3])
     }
   }
-  var name = prompt('Please enter your name:')
   var run = function (time) {
     clear()
     if (game_started) {
@@ -151,20 +152,21 @@ var start_game = function (H = 700, W = 1000) {
     const [key, value] = x.split('=')
     GET[key] = value
   })
-  var ip = GET["ip"] || window.location.hostname
-  console.log(ip)
+  var ip = GET['ip'] || window.location.hostname
+
   var ws = new WebSocket(`ws://${ip}:18465`)
   ws.onopen = function (e) {
     title = 'Click To Start'
     ws.send(`pjn|${name}`)
   };
   ws.onmessage = function (e) {
-    var [op, val] = e.data.split('|', 2)
+    var [op, val] = e.data.split('|')
     if (op === 'upd') {
       playerlist = JSON.parse(val)
     }
     if (op === 'pjn') {
-      var [id, name] = val.split(',', 2)
+      var id = val.split(',')[0]
+      var name = val.replace(/^\d+,/g, '')
       if (id == playerlist.self) return
       else playerlist[id] = {px: rspx, py: rspy, name: name}
     }
@@ -196,30 +198,18 @@ var start_game = function (H = 700, W = 1000) {
     if (py > H) py = H
     if (py < 0) py = 0
     
-    var into_wall = []
-    for (var i = 0; i < wall.length; i++) {
-      if (go_into(rx, ry, px, py, wall[i][0], wall[i][1], wall[i][2], wall[i][3]))
-        into_wall.push(i)
-    }
-
-    if (into_wall.length) {
-      var l = W, r = 0, t = H, b = 0;
-      for (var s = 0; s < into_wall.length; s++) {
-        l = Math.min(l, wall[into_wall[s]][0]);
-        r = Math.max(r, wall[into_wall[s]][0] + wall[into_wall[s]][2]);
-        t = Math.min(t, wall[into_wall[s]][1]);
-        b = Math.max(b, wall[into_wall[s]][1] + wall[into_wall[s]][3]);
+    for (var k = 0; k < 2; k++) {
+      for (var i = 0; i < wall.length; i++) {
+        var [ba, bb, bc, bd] = wall[i]
+        if (check(rx, ry, px, py, ba, bb, ba + bc, bb)) // up
+          py = bb - 1
+        if (check(rx, ry, px, py, ba, bb, ba, bb + bd)) // left
+          px = ba - 1
+        if (check(rx, ry, px, py, ba + bc, bb + bd, ba + bc, bb)) // right
+          px = ba + bc + 1
+        if (check(rx, ry, px, py, ba + bc, bb + bd, ba, bb + bd)) // bottom
+          py = bb + bd + 1
       }
-      // console.log(`l = ${l}, r = ${r}, t = ${t}, b = ${b}`)
-      // console.log(`rx = ${rx}, ry = ${ry}, px = ${px}, py = ${py}`)
-      if (rx < l && l <= px)
-        px = l - 1;
-      if (rx > r && r >= px)
-        px = r + 1;
-      if (ry < t && t <= py)
-        py = t - 1;
-      if (ry > b && b >= py)
-        py = b + 1;
     }
 
     for (var i = 0; i < lava.length; i++) {

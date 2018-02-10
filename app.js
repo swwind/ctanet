@@ -20,7 +20,7 @@ wss.on('connection', function (ws) {
   ws.send('upd|' + JSON.stringify(Object.assign({self: ws.id}, connection_list)))
   console.log(`Connection ${id} joined the game.`.green)
   ws.on('message', function (data) {
-    var [op, val] = data.split('|', 2)
+    var [op, val] = data.split('|')
     if (op === 'pup') {
       var [px, py] = val.split(',').map(x => parseInt(x))
       connection_list[ws.id].px = px

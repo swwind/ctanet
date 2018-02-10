@@ -8,11 +8,21 @@
   <script src="/js/fail.js"></script>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
+  <canvas id="canvas" height="700" width="1000"></canvas>
   <script src="/js/game.js"></script>
   <script type="text/javascript">
     $(document).ready(function () {
-      start_game()
+      var COOKIE = {};
+      (document.cookie || "").split(';').map(x => {
+        var s = x.split('=')
+        COOKIE[s[0].trim()] = s.slice(1).join('=')
+      })
+      var name = COOKIE['name']
+
+      if (!name)
+        askname()
+      else
+        start_game(name)
     })
   </script>
 </body>
