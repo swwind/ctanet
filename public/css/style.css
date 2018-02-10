@@ -69,6 +69,11 @@ body.no-color {
   font-family: pricedown;
   font-weight: bold;
 }
+@font-face {
+  src: url(/font/sao.otf);
+  font-family: sao;
+  font-weight: normal;
+}
 .fail-list {
   position: fixed;
   bottom: 20px;

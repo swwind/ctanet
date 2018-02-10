@@ -65,8 +65,10 @@ var start_game = function (H = 700, W = 1000) {
   var rspx = 200, rspy = 500
   var connect_lost = false
 
-  var draw_cursor = function (px, py, color) {
-    ctx.fillStyle = color || 'rgba(108, 18, 202, .5)'
+  var draw_cursor = function (px, py, name, color = .5) {
+    name = name || 'unnamed'
+    ctx.fillStyle = `rgba(108, 18, 202, ${color})`
+    ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(px, py)
     ctx.lineTo(px, py + 15)
@@ -75,6 +77,16 @@ var start_game = function (H = 700, W = 1000) {
     ctx.lineTo(px, py)
     ctx.fill()
     ctx.closePath()
+    ctx.lineWidth = 3
+    ctx.strokeStyle = `rgba(0, 0, 0, ${color})`
+    ctx.font = "16px sao"
+    ctx.textAlign = 'center'
+    ctx.strokeText(name, px + 2, py - 10)
+    ctx.fillStyle = `rgba(255, 255, 255, ${color})`
+    ctx.font = "16px sao"
+    ctx.textAlign = 'center'
+    ctx.fillText(name, px + 2, py - 10)
+
   }
   var lava = [[20, 20, 100, 100], [125, 20, 10, 100], [400, 250, 100, 120], [510, 250, 100, 120], [400, 100, 20, 150], [590, 100, 20, 150], [420, 100, 170, 20]]
   var wall = [[50, 50, 10, 500], [70, 50, 10, 500], [150, 450, 100, 100], [260, 450, 100, 100], [150, 560, 210, 20]]
@@ -90,6 +102,7 @@ var start_game = function (H = 700, W = 1000) {
       ctx.fillRect(wall[i][0] - 1, wall[i][1] - 1, wall[i][2] + 2, wall[i][3] + 2)
     }
   }
+  var name = prompt('Please enter your name:')
   var run = function (time) {
     clear()
     if (game_started) {
@@ -99,11 +112,11 @@ var start_game = function (H = 700, W = 1000) {
         for (var key in playerlist) {
           if (key != 'self' && key != playerlist.self) {
             value = playerlist[key]
-            draw_cursor(value.px, value.py)
+            draw_cursor(value.px, value.py, value.name)
           }
         }
       }
-      draw_cursor(px, py, 'rgba(108, 18, 202, .9)')
+      draw_cursor(px, py, name, .9)
     } else {
       ctx.fillStyle = "#666666"
       ctx.font = "32px 'Courier New'"
@@ -143,18 +156,24 @@ var start_game = function (H = 700, W = 1000) {
   var ws = new WebSocket(`ws://${ip}:18465`)
   ws.onopen = function (e) {
     title = 'Click To Start'
+    ws.send(`pjn|${name}`)
   };
   ws.onmessage = function (e) {
-    var [op, val] = e.data.split('|')
+    var [op, val] = e.data.split('|', 2)
     if (op === 'upd') {
       playerlist = JSON.parse(val)
-    } else if (op === 'pjn') {
-      if (val == playerlist.self) return
-      else playerlist[val] = {px: rspx, py: rspy}
-    } else if (op === 'pft') {
+    }
+    if (op === 'pjn') {
+      var [id, name] = val.split(',', 2)
+      if (id == playerlist.self) return
+      else playerlist[id] = {px: rspx, py: rspy, name: name}
+    }
+    if (op === 'pft') {
       delete playerlist[val]
-    } else if (op === 'pch') {
+    }
+    if (op === 'pch') {
       var [id, x, y] = val.split(',').map(x => parseInt(x))
+      if (id == playerlist.self) return
       playerlist[id].px = x
       playerlist[id].py = y
     }
@@ -218,15 +237,15 @@ var start_game = function (H = 700, W = 1000) {
           if (connect_lost)
             return
           px = rspx, py = rspy
-          ws.send(px + ',' + py)
+          ws.send(`pup|${px},${py}`)
           canvas.requestPointerLock()
           die = false
         }
       })
       document.exitPointerLock()
-      ws.send('-100,-100')
+      ws.send('pup|-100,-100')
     } else {
-      ws.send(px + ',' + py)
+      ws.send(`pup|${px},${py}`)
     }
   })
   run()

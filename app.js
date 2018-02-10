@@ -17,19 +17,24 @@ wss.broadcast = function (data) {
 }
 wss.on('connection', function (ws) {
   ws.id = ++ id
-  connection_list[ws.id] = {px: -100, py: -100}
   ws.send('upd|' + JSON.stringify(Object.assign({self: ws.id}, connection_list)))
-  wss.broadcast(`pjn|${id}`)
   console.log(`Connection ${id} joined the game.`.green)
   ws.on('message', function (data) {
-    var [px, py] = data.split(',').map(x => parseInt(x))
-    connection_list[ws.id].px = px
-    connection_list[ws.id].py = py
-    wss.broadcast(`pch|${ws.id},${px},${py}`)
+    var [op, val] = data.split('|', 2)
+    if (op === 'pup') {
+      var [px, py] = val.split(',').map(x => parseInt(x))
+      connection_list[ws.id].px = px
+      connection_list[ws.id].py = py
+      wss.broadcast(`pch|${ws.id},${px},${py}`)
+    }
+    if (op === 'pjn') {
+      connection_list[ws.id] = {px: -100, py: -100, name: val}
+      wss.broadcast(`pjn|${ws.id},${val}`)
+    }
   });
   ws.on('error', function () {})
   ws.on('close', function () {
-    console.log(`Connection ${id} left the game.`.red)
+    console.log(`Connection ${ws.id} left the game.`.red)
     delete connection_list[ws.id]
     wss.broadcast(`pft|${ws.id}`)
   })
