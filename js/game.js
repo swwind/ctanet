@@ -63,6 +63,7 @@ var start_game = function (H = 700, W = 1000) {
   var playerlist = undefined
   var die = false
   var rspx = 200, rspy = 500
+  var connect_lost = false
 
   var draw_cursor = function (px, py, color) {
     ctx.fillStyle = color || 'rgba(108, 18, 202, .5)'
@@ -118,7 +119,7 @@ var start_game = function (H = 700, W = 1000) {
   document.addEventListener('mozpointerlockchange', pointerLockChange, false);
   document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
   canvas.addEventListener('click', function (e) {
-    if (gaming || die)
+    if (gaming || die || connect_lost)
       return;
     canvas.requestPointerLock =
       canvas.requestPointerLock    ||
@@ -160,6 +161,8 @@ var start_game = function (H = 700, W = 1000) {
   };
   ws.onclose = function (e) {
     game_started = false
+    connect_lost = true
+    document.exitPointerLock()
     title = "Lost Connection";
   };
 
