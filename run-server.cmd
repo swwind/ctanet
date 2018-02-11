@@ -1,3 +1,3 @@
 @echo off
-npm start
-pause
+node app.js
+if %errorlevel% neq 0 pause

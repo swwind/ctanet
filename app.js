@@ -1,13 +1,18 @@
 const HttpServer = require('http-server')
 const WebSocket = require('ws')
 const colors = require('colors')
+const fs = require('fs')
 const localhost = "127.0.0.1"
 const http_port = 80
 const websocket_port = 18465
 
+const LOGO_FILE_PATH = 'logo.txt'
+let data = fs.readFileSync(LOGO_FILE_PATH, 'utf-8')
+console.log(data);
+
 const wss = new WebSocket.Server({port: websocket_port});
-var connection_list = {}
-var id = 0
+let connection_list = {}
+let id = 0
 wss.broadcast = function (data) {
   wss.clients.forEach(function (client) {
     if (client.readyState === WebSocket.OPEN) {
@@ -20,9 +25,10 @@ wss.on('connection', function (ws) {
   ws.send('upd|' + JSON.stringify(Object.assign({self: ws.id}, connection_list)))
   console.log(`Connection ${id} joined the game.`.green)
   ws.on('message', function (data) {
-    var [op, val] = data.split('|')
+    let tmp = data.split('|')
+    let op = tmp[0], val = tmp.slice(1).join('|')
     if (op === 'pup') {
-      var [px, py] = val.split(',').map(x => parseInt(x))
+      let [px, py] = val.split(',').map(x => parseInt(x))
       connection_list[ws.id].px = px
       connection_list[ws.id].py = py
       wss.broadcast(`pch|${ws.id},${px},${py}`)
@@ -40,9 +46,11 @@ wss.on('connection', function (ws) {
   })
 });
 
-console.log('websocket server started at [ws://%s:%d]', localhost, websocket_port)
+console.log('websocket server started at [%s]', `ws://${localhost}:${websocket_port}`.yellow)
 
-var hs = HttpServer.createServer()
+let hs = HttpServer.createServer()
 hs.listen(http_port)
-console.log('http server started at [http://%s:%d]', localhost, http_port)
+console.log('http server started at [%s]', `http://${localhost}:${http_port}`.yellow)
+
+console.log('')
 

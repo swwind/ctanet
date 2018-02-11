@@ -124,6 +124,7 @@ canvas {
   position: fixed;
   display: block;
   margin: auto;
+  margin-top: 150px;
   top: 0;
   left: 0;
   bottom: 0;
@@ -139,8 +140,8 @@ canvas {
   color: #666;
 }
 .input-dlg .input-input {
-  border: none;
-  border-left: 5px solid #ccc;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   line-height: 20px;
   font-family: sao;
   color: #666;
@@ -150,6 +151,12 @@ canvas {
   display: block;
   width: 100%;
   box-sizing: border-box;
+  transition: all .3s;
+}
+.input-dlg .input-input:focus {
+  border: 1px solid #00bcd4;
+  box-shadow: 0 0 5px #00bcd4;
+  transition: all .3s;
 }
 .input-dlg .input-button {
   font-family: sao;
@@ -162,13 +169,14 @@ canvas {
   border: none;
   background-color: rgba(0, 156, 0, 0.8);
   transition: background-color .3s;
+  margin-top: 30px;
 }
 .input-dlg .input-copy {
   font-size: 1em;
   font-family: sao;
   text-align: center;
   color: #666;
-  margin: 20px 0;
+  margin: 10px 0;
 }
 .input-dlg .input-copy a {
   color: #00BCD4;

@@ -9,8 +9,6 @@ var fail = function (arg) {
       $('.fail-title').remove();
       $(arg.content).removeClass('fail');
       $('body').removeClass('no-color');
-    }, 1000)
-    setTimeout(function () {
       fn && fn();
       $('.fail-list').remove();
       hm.fadeOut(500);
@@ -58,7 +56,7 @@ var fail = function (arg) {
 var askname = function (tit) {
   var div = $('<div/>').addClass('input-dlg')
   var tiv = $('<div/>').addClass('input-title').html('Please enter your name:')
-  var iiv = $('<input/>').addClass('input-input').attr('type', 'text').attr('placeholder', 'unnamed')
+  var iiv = $('<input/>').addClass('input-input').attr('type', 'text').attr('placeholder', 'Nick')
   var cbt = $('<button/>').addClass('input-button').html('OK')
   var cpy = $('<div/>').addClass('input-copy').html('Powered By <a href="https://github.com/swwind/ctanet/" target="_view">Ctanet</a>')
   cbt.click(function () {
@@ -72,5 +70,6 @@ var askname = function (tit) {
   })
   div.append(tiv).append(iiv).append(cbt).append(cpy)
   $("body").append(div);
+  iiv.val(tit)
   iiv.focus()
 }

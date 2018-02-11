@@ -13,16 +13,11 @@
   <script type="text/javascript">
     $(document).ready(function () {
       var COOKIE = {};
-      (document.cookie || "").split(';').map(x => {
+      (document.cookie || "").split('; ').map(x => {
         var s = x.split('=')
-        COOKIE[s[0].trim()] = s.slice(1).join('=')
+        COOKIE[s[0]] = s.slice(1).join('=')
       })
-      var name = COOKIE['name']
-
-      if (!name)
-        askname()
-      else
-        start_game(name)
+      askname(COOKIE['name'])
     })
   </script>
 </body>

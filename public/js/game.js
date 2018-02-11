@@ -64,12 +64,14 @@ var start_game = function (name, H = 700, W = 1000) {
   var title = 'Connecting'
   var playerlist = undefined
   var die = false
-  var rspx = 200, rspy = 500
   var connect_lost = false
+  var rspx = 50, rspy = 50
+  var lava = [[140, 70, 840, 50], [140, 0, 840, 50]]
+  var wall = [[100, 0, 20, 100], [0, 120, 980, 20]]
 
-  var draw_cursor = function (px, py, name, color = .9) {
+  var draw_cursor = function (px, py, name) {
     name = name || 'unnamed'
-    ctx.fillStyle = `rgba(108, 18, 202, ${color})`
+    ctx.fillStyle = 'rgba(108, 18, 202, .9)'
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(px, py)
@@ -80,21 +82,19 @@ var start_game = function (name, H = 700, W = 1000) {
     ctx.fill()
     ctx.closePath()
     ctx.lineWidth = 3
-    ctx.strokeStyle = `rgba(0, 0, 0, ${color})`
+    ctx.strokeStyle = 'rgba(0, 0, 0, .9)'
     ctx.font = '16px sao'
     ctx.textAlign = 'center'
     ctx.strokeText(name, px + 2, py - 10)
-    ctx.fillStyle = `rgba(255, 255, 255, ${color})`
+    ctx.fillStyle = 'rgba(255, 255, 255, .9)'
     ctx.font = '16px sao'
     ctx.textAlign = 'center'
     ctx.fillText(name, px + 2, py - 10)
 
   }
-  var lava = [[20, 20, 100, 100], [125, 20, 10, 100], [400, 250, 100, 120], [510, 250, 100, 120], [400, 100, 20, 150], [590, 100, 20, 150], [420, 100, 170, 20]]
-  var wall = [[50, 50, 10, 500], [70, 50, 10, 500], [260, 450, 100, 110], [150, 550, 210, 20]]
   var draw_lava = function () {
     for (var i = 0; i < lava.length; i++) {
-      ctx.fillStyle = 'rgba(241, 63, 63, .5)'
+      ctx.fillStyle = 'rgba(241, 100, 100, .5)'
       ctx.fillRect(lava[i][0], lava[i][1], lava[i][2], lava[i][3])
     }
   }
@@ -117,7 +117,7 @@ var start_game = function (name, H = 700, W = 1000) {
           }
         }
       }
-      draw_cursor(px, py, name, .9)
+      draw_cursor(px, py, name)
     } else {
       ctx.fillStyle = "#666666"
       ctx.font = "32px 'Courier New'"
@@ -160,7 +160,8 @@ var start_game = function (name, H = 700, W = 1000) {
     ws.send(`pjn|${name}`)
   };
   ws.onmessage = function (e) {
-    var [op, val] = e.data.split('|')
+    let tmp = e.data.split('|')
+    let op = tmp[0], val = tmp.slice(1).join('|')
     if (op === 'upd') {
       playerlist = JSON.parse(val)
     }
@@ -188,7 +189,7 @@ var start_game = function (name, H = 700, W = 1000) {
   };
 
   canvas.addEventListener('mousemove', function (e) {
-    if (!gaming || die)
+    if (!gaming || die || connect_lost)
       return;
     var rx = px, ry = py
     px += e.movementX
