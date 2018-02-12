@@ -59,9 +59,14 @@ var askname = function (tit) {
   var iiv = $('<input/>').addClass('input-input').attr('type', 'text').attr('placeholder', 'Nick')
   var cbt = $('<button/>').addClass('input-button').html('OK')
   var cpy = $('<div/>').addClass('input-copy').html('Powered By <a href="https://github.com/swwind/ctanet/" target="_view">Ctanet</a>')
+  iiv.on('input', function () {
+    var s = $(this).val()
+    if (s.length > 10) s = s.substr(0, 10)
+    $(this).val(s)
+  })
   cbt.click(function () {
+    var name = iiv.val().substr(0, 10)
     div.fadeOut(500)
-    var name = iiv.val()
     document.cookie = `name=${name}`
     setTimeout(function () {
       div.remove()
