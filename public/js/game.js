@@ -127,7 +127,7 @@ var start_game = function (name, H = 700, W = 1000) {
     window.requestAnimationFrame(run)
   }
   var pointerLockChange = function () {
-    gaming = !gaming
+    gaming = !!document.pointerLockElement
   }
   document.addEventListener('pointerlockchange', pointerLockChange, false);
   document.addEventListener('mozpointerlockchange', pointerLockChange, false);

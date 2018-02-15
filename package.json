@@ -8,14 +8,14 @@
   "main": "app.js",
   "author": "swwind",
   "readmeFilename": "README.md",
-  "license": "AGPL",
+  "license": "MIT",
   "contributors": [
     "swwind",
     "nn020701"
   ],
   "dependencies": {
     "colors": "^1.1.2",
-    "http-server": "^0.11.1",
+    "express": "^4.16.2",
     "ws": "^4.0.0"
   },
   "devDependencies": {},

@@ -1,4 +1,4 @@
-const HttpServer = require('http-server')
+const express = require('express')
 const WebSocket = require('ws')
 const colors = require('colors')
 const fs = require('fs')
@@ -48,8 +48,9 @@ wss.on('connection', function (ws) {
 
 console.log('websocket server started at [%s]', `ws://${localhost}:${websocket_port}`.yellow)
 
-let hs = HttpServer.createServer()
-hs.listen(http_port)
+let app = express()
+app.use(express.static('public'))
+app.listen(80)
 console.log('http server started at [%s]', `http://${localhost}:${http_port}`.yellow)
 
 console.log('')
